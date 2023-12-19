@@ -45,7 +45,9 @@ end
 function metric(name, mtype, labels, value)
   output("# TYPE " .. name .. " " .. mtype)
   local outputter = function(labels, value)
-    print_metric(name, labels, value)
+    if (tonumber(value) ~= 0) then
+      print_metric(name, labels, value)
+    end
   end
   if value then
     outputter(labels, value)
