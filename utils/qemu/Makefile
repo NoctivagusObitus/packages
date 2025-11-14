@@ -9,11 +9,11 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=qemu
-PKG_VERSION:=9.1.2
+PKG_VERSION:=10.1.0
 PKG_RELEASE:=1
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
-PKG_HASH:=19fd9d7535a54d6e044e186402aa3b3b1bdfa87c392ec8884855592c8510c96f
 PKG_SOURCE_URL:=https://download.qemu.org/
+PKG_HASH:=e0517349b50ca73ebec2fa85b06050d5c463ca65c738833bd8fc1f15f180be51
 PKG_LICENSE:=GPL-2.0-only
 PKG_LICENSE_FILES:=LICENSE tcg/LICENSE
 PKG_MAINTAINER:=Yousong Zhou <yszhou4tech@gmail.com>
@@ -355,6 +355,7 @@ CONFIGURE_ARGS +=			\
 	--$(if $(CONFIG_QEMU_UI_VNC),enable,disable)-vnc			\
 	--$(if $(CONFIG_QEMU_UI_VNC_JPEG),enable,disable)-vnc-jpeg		\
 	--$(if $(CONFIG_QEMU_UI_VNC_SASL),enable,disable)-vnc-sasl		\
+	--disable-dbus-display		\
 	--disable-vte			\
 	--enable-curses			\
 	--enable-iconv			\
@@ -418,8 +419,13 @@ CONFIGURE_ARGS +=			\
 	--disable-qom-cast-debug	\
 	--disable-rbd			\
 	--disable-rdma			\
+	--disable-rust			\
 	--disable-rutabaga-gfx          \
-	--disable-sanitizers		\
+	--disable-asan			\
+	--disable-tsan			\
+	--disable-ubsan			\
+	--disable-fuzzing		\
+	--disable-safe-stack		\
 	--$(if $(CONFIG_QEMU_SECCOMP),enable,disable)-seccomp		\
 	--disable-smartcard		\
 	--disable-snappy		\

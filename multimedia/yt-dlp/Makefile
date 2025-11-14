@@ -1,16 +1,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=yt-dlp
-PKG_VERSION:=2024.7.9
+PKG_VERSION:=2025.11.12
 PKG_RELEASE:=1
 
 PYPI_NAME:=yt-dlp
-PKG_HASH:=e19f00f9e55e90bca1c94bcaf809aa33e51634be9f0de2df84a72d3206934f94
+PKG_HASH:=5f0795a6b8fc57a5c23332d67d6c6acf819a0b46b91a6324bae29414fa97f052
 PYPI_SOURCE_NAME:=yt_dlp
 
-PKG_MAINTAINER:=Michal Vasilek <michal.vasilek@nic.cz>
+PKG_MAINTAINER:=George Sapkin <george@sapk.in>
 PKG_LICENSE:=Unlicense
 PKG_LICENSE_FILES:=LICENSE
+PKG_CPE_ID:=cpe:/a:yt-dlp_project:yt-dlp
 
 PKG_BUILD_DEPENDS:=python-hatchling/host
 
@@ -21,7 +22,7 @@ include ../../lang/python/python3-package.mk
 define Package/yt-dlp
   SECTION:=multimedia
   CATEGORY:=Multimedia
-  TITLE:=Utility to download videos from YouTube.com
+  TITLE:=A feature-rich command-line audio/video downloader
   URL:=https://github.com/yt-dlp/yt-dlp
   PROVIDES:=youtube-dl
   DEPENDS:= \
@@ -35,13 +36,27 @@ define Package/yt-dlp
     +python3-sqlite3 \
     +python3-urllib \
     +python3-uuid \
-    +python3-xml
+    +python3-xml \
+    +quickjs
 endef
 
 define Package/yt-dlp/description
-  yt-dlp is a small command-line program to download videos
-  from YouTube.com and other video sites.
-  It requires the Python3 interpreter.
+  yt-dlp is a feature-rich command-line audio/video downloader with support for
+  thousands of sites.
+endef
+
+define Package/yt-dlp/conffiles
+/etc/yt-dlp.conf
+endef
+
+define Py3Package/yt-dlp/install
+	if [ -d $(PKG_INSTALL_DIR)/usr/bin ]; then \
+		$(INSTALL_DIR) $(1)/usr/bin ; \
+		$(CP) $(PKG_INSTALL_DIR)/usr/bin/* $(1)/usr/bin/ ; \
+	fi
+
+	$(INSTALL_DIR) $(1)/etc
+	$(INSTALL_CONF) ./files/yt-dlp.conf $(1)/etc/yt-dlp.conf
 endef
 
 $(eval $(call Py3Package,yt-dlp))

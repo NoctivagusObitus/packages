@@ -6,7 +6,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=php
-PKG_VERSION:=8.4.5
+PKG_VERSION:=8.4.14
 PKG_RELEASE:=1
 
 PKG_MAINTAINER:=Michael Heimpold <mhei@heimpold.de>
@@ -16,7 +16,7 @@ PKG_CPE_ID:=cpe:/a:php:php
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.xz
 PKG_SOURCE_URL:=https://www.php.net/distributions/
-PKG_HASH:=0d3270bbce4d9ec617befce52458b763fd461d475f1fe2ed878bb8573faed327
+PKG_HASH:=bac90ee7cf738e814c89b6b27d4d2c4b70e50942a420837e1a22f5fd5f9867a3
 
 PKG_BUILD_PARALLEL:=1
 PKG_BUILD_FLAGS:=no-mips16
@@ -190,6 +190,7 @@ CONFIGURE_ARGS+= \
 	\
 	--without-valgrind \
 	--with-external-pcre \
+	--$(if $(CONFIG_PCRE2_JIT_ENABLED),with,without)-pcre-jit \
 	--with-zlib="$(STAGING_DIR)/usr"
 
 ifeq ($(CONFIG_LIBC_USE_GLIBC),y)
@@ -396,6 +397,9 @@ endif
 
 ifneq ($(SDK)$(CONFIG_PACKAGE_php8-mod-snmp),)
   CONFIGURE_ARGS+= --with-snmp=shared,"$(STAGING_DIR)/usr"
+  CONFIGURE_VARS+= \
+    ac_cv_have_decl_usmHMAC192SHA256AuthProtocol=no \
+    ac_cv_have_decl_usmHMAC384SHA512AuthProtocol=no
 else
   CONFIGURE_ARGS+= --without-snmp
 endif
@@ -496,7 +500,7 @@ CONFIGURE_VARS+= \
 	php_cv_cc_rpath="no" \
 	ac_cv_php_xml2_config_path="$(STAGING_DIR)/host/bin/xml2-config" \
 	ac_cv_u8t_decompose=yes \
-	ac_cv_have_pcre2_jit=no
+	php_cv_have_pcre2_jit=$(if $(CONFIG_PCRE2_JIT_ENABLED),yes,no)
 
 define Package/php8/conffiles
 /etc/php.ini
@@ -660,7 +664,7 @@ $(eval $(call BuildModule,session,Session))
 $(eval $(call BuildModule,shmop,Shared Memory))
 $(eval $(call BuildModule,simplexml,SimpleXML,+@PHP8_LIBXML +PACKAGE_php8-mod-simplexml:libxml2))
 $(eval $(call BuildModule,snmp,SNMP,+PACKAGE_php8-mod-snmp:libnetsnmp +PACKAGE_php8-mod-snmp:libopenssl))
-$(eval $(call BuildModule,soap,SOAP,+@PHP8_LIBXML +PACKAGE_php8-mod-soap:libxml2))
+$(eval $(call BuildModule,soap,SOAP,+@PHP8_LIBXML +PACKAGE_php8-mod-soap:libxml2 +php8-mod-session))
 $(eval $(call BuildModule,sockets,Sockets))
 $(eval $(call BuildModule,sodium,Sodium,+PACKAGE_php8-mod-sodium:libsodium,30))
 $(eval $(call BuildModule,sqlite3,SQLite3,+PACKAGE_php8-mod-sqlite3:libsqlite3))
